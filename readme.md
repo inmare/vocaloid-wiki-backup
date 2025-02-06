@@ -11,7 +11,7 @@
 
 ## 사용법
 
-데이터는 아래의 리포지토리에서 확인 할 수 있습니다.
+데이터는 아래의 리포지토리에서 확인 할 수 있습니다.  
 https://github.com/inmare/vocaloid-wiki-data
 
 ## TODO
