@@ -3,7 +3,7 @@ import json
 import os
 
 
-class QuotesSpider(scrapy.Spider):
+class VocaloidWikiSpider(scrapy.Spider):
     name = "vocaloid-wiki"
 
     def start_requests(self):
@@ -11,25 +11,13 @@ class QuotesSpider(scrapy.Spider):
 
         yield scrapy.Request(url, self.parse)
 
-        # tag = getattr(self, "tag", None)
-        # if tag is not None:
-        #     url = url + "tag/" + tag
-        # yield scrapy.Request(url, self.parse)
-
     def parse(self, response):
         card_css = "#page-content ul"
-        pages = []
 
         for card in response.css(card_css):
             for link in card.css("li a"):
                 page_url = link.css("::attr(href)").get()
-
-                pages.append(page_url)
-
-        pages.sort()
-
-        for page in pages:
-            yield response.follow(page, self.parse_song_page)
+                yield response.follow(page_url, self.parse_song_page)
 
     def parse_song_page(self, response):
         song_css = "#page-content > p"
