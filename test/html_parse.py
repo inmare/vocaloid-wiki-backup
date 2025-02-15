@@ -85,7 +85,7 @@ def get_page_info(response, title):
 
         # 가사 파싱
         lyrics_selector = response.css(".wiki-content-table")
-        page_info["lyrics"] = parse_lyrics(response, lyrics_selector)
+        page_info["lyricsInfo"] = parse_lyrics(response, lyrics_selector)
 
         return page_info
 
