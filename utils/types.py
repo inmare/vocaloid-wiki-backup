@@ -36,7 +36,7 @@ class PageInfo(TypedDict):
     originalPageTitle: str | None  # 중복된 제목의 경우 작곡가를 제외한 원래 제목
     originalTitle: str  # 원 제목
     songInfo: list[SongInfo]
-    lyrics: list[list[str]]
+    lyricsInfo: list[LyricsInfo]
 
 
 class SongMetaInfo(TypedDict):
