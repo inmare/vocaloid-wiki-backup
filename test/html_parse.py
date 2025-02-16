@@ -138,10 +138,10 @@ def parse_table(table_selector):
             # logging.debug(f"{th_text}: {td_text_list}")
 
             # th가 여러 개의 정보를 가지고 있는지 확인
-            has_multiple_th = re.search(r"[&*\/]", th_text)
+            has_multiple_th = re.search(r"[&*\/・]", th_text)
             if has_multiple_th:
                 # 만약 그렇다면 th를 분리해서 list로 만듦
-                th_text_list = re.split(r"[&*\/]", th_text)
+                th_text_list = re.split(r"[&*\/・]", th_text)
 
                 # th가 노래/조교, 코러스/조교일 경우 td에도 음합엔 / 조교자의 형태로 여러가지 정보가 있음
                 # 이를 확인하기 위한 과정
@@ -242,8 +242,8 @@ if __name__ == "__main__":
             html_data.append(HtmlData(title=file, content=f.read()))
 
     title_to_check = [
-        "t-a-o.html",
-        # "neppuu.html",
+        # "t-a-o.html",
+        "neppuu.html",
         # "eighty-eight.html",
         # "super-turkish-march-doomed.html",
         # "momentary-drive.html",
