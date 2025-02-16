@@ -4,9 +4,10 @@ from typing import TypedDict
 class SongInfo(TypedDict):
     originalUrl: str | None  # 원곡 URL
     # 곡에 참여한 사람, 음합엔
-    composer: list[str]
+    composer: list[str] | None
     lyricist: list[str]
     singer: list[str]
+    originalSong: list[str] | None
     arranger: list[str] | None
     chorus: list[str] | None
     vocaloidEditor: list[str] | None
@@ -60,6 +61,11 @@ SONG_META_INFO = [
         name="singer",
         mustSame=False,
         phrase=["노래", "나레이션", "대사", "피처링", "삐뽀삐뽀"],
+    ),
+    SongMetaInfo(
+        name="originalSong",
+        mustSame=False,
+        phrase=["원곡"],
     ),
     SongMetaInfo(
         name="arranger",
@@ -139,6 +145,6 @@ SONG_META_INFO = [
     SongMetaInfo(
         name="playerEtc",
         mustSame=False,
-        phrase=["연주", "원곡", "하이라이트", "밴드", "스크래치", "코러스 제작"],
+        phrase=["연주", "하이라이트", "밴드", "스크래치", "코러스 제작"],
     ),
 ]
