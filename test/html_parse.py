@@ -216,7 +216,17 @@ def parse_lyrics(response, lyrics_selector):
 
     # 업데이트 된 가사표로 새로 가사를 크롤링함
     for lyrics_table in fixed_lyrics_selector:
-        lyrics = lyrics_table.css("tr").css("th::text, td::text").getall()
+        lyrics_tr = lyrics_table.css("tr")
+        lyrics = []
+        # the-rain-clear-up-twice의 경우처럼 한 행에서 표가 2개로 나뉘어지는 경우가 있음
+        # 그런 경우를 위해서 임시로 for문을 돌면서 가사를 띄어쓰기와 함께 모아주는 코드 작성
+        # TODO: 추후에 가사를 모을 때 다른 경우가 생기면 그에 대한 수정 필요
+        for tr in lyrics_tr:
+            tr_text = tr.css("th::text, td::text").getall()
+            lyrics_text = ""
+            for text in tr_text:
+                lyrics_text += text + " "
+            lyrics.append(lyrics_text.strip())
         # 이때 가사표가 2개 이상일 경우 동영상의 배치 순서 (왼>오)에 따라 가사도 배치되어 있다고 가정함
         # 동영상의 순서대로 가사를 배치함
         lyrics_info = LyricsInfo(lyrics=lyrics)
@@ -251,7 +261,7 @@ if __name__ == "__main__":
         # "super-turkish-march-doomed.html",
         # "momentary-drive.html",
         # "turkish-march-doomed.html",
-        # "the-rain-clear-up-twice.html",
+        "the-rain-clear-up-twice.html",
     ]
 
     for data in html_data:
