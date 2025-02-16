@@ -55,7 +55,9 @@ def get_page_info(response, title):
         page_info["pageTitle"] = page_title
 
         # 원 제목 파싱
-        original_title_text = table_list[0].css("tr:first-child *::text").getall()
+        original_title_text = (
+            table_list[0].css(".info-table > tr:first-child *::text").getall()
+        )
         original_title = "".join(original_title_text).strip()
         page_info["originalTitle"] = original_title
 
@@ -113,6 +115,12 @@ def parse_table(table_selector):
     # 만약 원본 url이 2개 이상이라면 그 밑의 tr에서 정보가 나누어질 때 맞는 위치에 넣어야 함
     # 이때 위치는 원본 url 배치 순서를 따름
     for tr in tr_list[3:]:
+        # 일부 문서의 접을 수 있는 블럭에 해당하는 tr이 있는지 확인함
+        # 해당 tr은 아무런 내용도 없으므로 스킵함
+        is_collapsible_tr = tr.css(".collapsible-block").get()
+        if is_collapsible_tr:
+            continue
+
         # 각 tr에서 th와 td를 모두 가져옴
         th_selector_list = tr.css("th")
         td_selector_list = tr.css("td")
@@ -233,11 +241,20 @@ if __name__ == "__main__":
         with open(f"test/html/{file}", "r", encoding="utf-8") as f:
             html_data.append(HtmlData(title=file, content=f.read()))
 
-    from_idx = 3
+    title_to_check = [
+        "t-a-o.html",
+        # "neppuu.html",
+        # "eighty-eight.html",
+        # "super-turkish-march-doomed.html",
+        # "momentary-drive.html",
+        # "turkish-march-doomed.html",
+        # "the-rain-clear-up-twice.html",
+    ]
 
     for data in html_data:
-        # for data in html_data[from_idx : from_idx + 1]:
         title = data["title"]
+        if title not in title_to_check:
+            continue
         logging.info(f"Start parsing {title}")
         response = Selector(text=data["content"])
         page_info = get_page_info(response, title)
