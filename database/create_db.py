@@ -62,19 +62,4 @@ def find_page(page_url: str) -> Page:
 
 
 if __name__ == "__main__":
-    # import json
-
-    # json_list = os.listdir("json/temp")
-    # data_list = []
-    # for json_file in json_list:
-    #     with open(f"json/temp/{json_file}", "r", encoding="utf-8") as f:
-    #         data = json.load(f)
-    #         data_list.append(data)
-
-    create_db_and_tables(delete_old_db=True)
-
-    # for data in data_list:
-    #     create_page(data)
-
-    # 노래 검색
-    # page = find_page("/telecaster-b-boy")
+    pass
