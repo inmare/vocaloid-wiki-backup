@@ -21,7 +21,7 @@ class VocaloidWikiSpider(scrapy.Spider):
         urls = [
             "http://vocaro.wikidot.com/t-a-o",  # 기타 참여자라는 숨겨진 표가 존재
             "http://vocaro.wikidot.com/neppuu",  # 작사・작곡 형태
-            "http://vocaro.wikidot.com/eighty-eight",  # 작곡, 노래에 2명 이상의 사람이 존재
+            "http://vocaro.wikidot.com/the-dream-that-girl-doll-dreamed",  # 참가자 사이에 문자가 포함됨
             "http://vocaro.wikidot.com/super-turkish-march-doomed",  # 원곡이 존재, 링크가 없음
             "http://vocaro.wikidot.com/momentary-drive",  # 출처 행이 없음
             "http://vocaro.wikidot.com/turkish-march-doomed",  # 작곡이 없고 원곡만 존재
