@@ -24,7 +24,6 @@ class VocaloidWikiSpider(scrapy.Spider):
             "http://vocaro.wikidot.com/the-dream-that-girl-doll-dreamed",  # 참가자 사이에 문자가 포함됨
             "http://vocaro.wikidot.com/super-turkish-march-doomed",  # 원곡이 존재, 링크가 없음
             "http://vocaro.wikidot.com/momentary-drive",  # 출처 행이 없음
-            "http://vocaro.wikidot.com/turkish-march-doomed",  # 작곡이 없고 원곡만 존재
             "http://vocaro.wikidot.com/the-rain-clear-up-twice",  # 표에서 가사가 따로 나뉨
         ]
 
