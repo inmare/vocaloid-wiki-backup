@@ -134,7 +134,9 @@ def parse_table(table_selector):
             # th와 td를 한 묶음으로 가져온 다음에 각각의 text를 가져옴
             th_text = th_selector.css("*::text").get()
             td_text_list = td_selector.css("*::text").getall()
-            td_text_list = "".join(td_text_list).strip().split("\n")
+            # 줄바꿈 문자나 다른 문자들로 td가 나뉘어져 있는 걸 분리함
+            # TODO: ×의 경우 히토시즈쿠 × 야마△의 경우를 위한 것으로 추후 수정가능능
+            td_text_list = re.split(r"\s*[\n×]\s*", "".join(td_text_list).strip())
             # logging.debug(f"{th_text}: {td_text_list}")
 
             # th가 여러 개의 정보를 가지고 있는지 확인
@@ -243,8 +245,9 @@ if __name__ == "__main__":
 
     title_to_check = [
         # "t-a-o.html",
-        "neppuu.html",
+        # "neppuu.html",
         # "eighty-eight.html",
+        # "the-dream-that-girl-doll-dreamed.html",
         # "super-turkish-march-doomed.html",
         # "momentary-drive.html",
         # "turkish-march-doomed.html",
