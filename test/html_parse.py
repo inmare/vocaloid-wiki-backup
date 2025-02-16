@@ -18,6 +18,17 @@ class HtmlData(TypedDict):
     content: str
 
 
+def get_th_info(th_text):
+    th_info = []
+    for meta in SONG_META_INFO:
+        phrase = meta["phrase"]
+        for p in phrase:
+            if p in th_text:
+                th_info.append(p)
+                break
+    return th_info
+
+
 def find_meta_from_name(name):
     return list(filter(lambda meta: meta["name"] == name, SONG_META_INFO))[0]
 
@@ -154,10 +165,14 @@ def parse_table(table_selector):
             # logging.debug(f"{th_text}: {td_text_list}")
 
             # th가 여러 개의 정보를 가지고 있는지 확인
-            has_multiple_th = re.search(r"[&*\/・]", th_text)
+            # 작사작곡처럼 붙어있는 경우 추가
+            # TODO: 만약 나중에 다른 경우가 생긴다면 추가해야 함
+            th_text_list = get_th_info(th_text)
+            # has_multiple_th = re.search(r"[&*\/s・]", th_text) or th_text == "작사작곡"
+            has_multiple_th = len(th_text_list) > 1
             if has_multiple_th:
                 # 만약 그렇다면 th를 분리해서 list로 만듦
-                th_text_list = re.split(r"[&*\/・]", th_text)
+                # th_text_list = re.split(r"[&*\/・]", th_text)
 
                 # th가 노래/조교, 코러스/조교일 경우 td에도 음합엔 / 조교자의 형태로 여러가지 정보가 있음
                 # 이를 확인하기 위한 과정
@@ -250,7 +265,7 @@ def parse_lyrics(response, lyrics_selector):
 
     table_wrap = response.css(".table-wrap")
     if table_wrap:
-        logging.debug(table_wrap.css("h2 span"))
+        # logging.debug(table_wrap.css("h2 span"))
         lyrics_versions = table_wrap.css("h2 span::text").getall()
         for idx, version in enumerate(lyrics_versions):
             lyrics_info_list[idx]["version"] = version
@@ -275,9 +290,10 @@ if __name__ == "__main__":
         # "eighty-eight.html",
         # "the-dream-that-girl-doll-dreamed.html",
         # "super-turkish-march-doomed.html",
-        "momentary-drive.html",
+        # "momentary-drive.html",
         # "turkish-march-doomed.html",
         # "the-rain-clear-up-twice.html",
+        "gekkou.html"
     ]
 
     for data in html_data:
