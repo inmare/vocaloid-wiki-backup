@@ -12,6 +12,17 @@ from utils.types import PageInfo, SongInfo, LyricsInfo, SONG_META_INFO
 from database import create_db
 
 
+def get_th_info(th_text):
+    th_info = []
+    for meta in SONG_META_INFO:
+        phrase = meta["phrase"]
+        for p in phrase:
+            if p in th_text:
+                th_info.append(p)
+                break
+    return th_info
+
+
 def find_meta_from_name(name):
     return list(filter(lambda meta: meta["name"] == name, SONG_META_INFO))[0]
 
@@ -134,8 +145,8 @@ class VocaloidWikiSpider(scrapy.Spider):
                 create_db.create_page(page_info)
 
                 # json 파일로 저장
-                # with open(f"json/data/{page_url[1:]}.json", "w", encoding="utf-8") as f:
-                #     json.dump(page_info, f, indent=2, ensure_ascii=False)
+                with open(f"json/data/{page_url[1:]}.json", "w", encoding="utf-8") as f:
+                    json.dump(page_info, f, indent=2, ensure_ascii=False)
 
                 # 모든 곡에 대한 정보를 저장
                 # TODO: 추후에 제대로 된 타입 생성
@@ -160,8 +171,25 @@ class VocaloidWikiSpider(scrapy.Spider):
         # 이때 1번째 tr은 원 제목, 2번째 tr은 동영상 플레이어기에 3번째 tr부터 가져옴
         tr_list = table_selector.css("tr")
 
-        # 원본 URL 파싱
-        original_url_list = tr_list[2].css("a::attr(href)").getall()
+        # 일반적인 경우 2번째 tr에 출처를 담은 링크가 있지만 없는 경우도 있음
+        # 이 경우에는 info_idx를 2로 설정함
+        info_idx = 3
+        third_tr_th_text = tr_list[2].css("th *::text").get()
+        if third_tr_th_text == "출처":
+            # 원본 URL 파싱
+            original_url_list = tr_list[2].css("a::attr(href)").getall()
+            # logging.debug(f"Original URL: {original_url_list}")
+        else:
+            info_idx = 2
+            # TODO: 현재는 니코동 플레이어에만 대응되게 해놨지만 나중에 다른 플레이어도 대응할 수 있도록 수정 필요
+            player_links = (
+                tr_list[1].css(".embed-video-wrap iframe::attr(src)").getall()
+            )
+            original_url_list = []
+            for player_link in player_links:
+                parsed_link = urlparse(player_link).path
+                original_url_list.append("https://www.nicovideo.jp" + parsed_link)
+
         for original_url in original_url_list:
             if original_url == "":
                 info = SongInfo(originalUrl=None)
@@ -169,18 +197,22 @@ class VocaloidWikiSpider(scrapy.Spider):
                 info = SongInfo(originalUrl=original_url)
             info_list.append(info)
 
-        # 원본 url이 2개 이상인지 확인
         has_multiple_url = len(original_url_list) > 1
 
         # 만약 원본 url이 2개 이상이라면 그 밑의 tr에서 정보가 나누어질 때 맞는 위치에 넣어야 함
         # 이때 위치는 원본 url 배치 순서를 따름
-        for tr in tr_list[3:]:
+        for tr in tr_list[info_idx:]:
+            # 일부 문서의 접을 수 있는 블럭에 해당하는 tr이 있는지 확인함
+            # 해당 tr은 아무런 내용도 없으므로 스킵함
+            is_collapsible_tr = tr.css(".collapsible-block").get()
+            if is_collapsible_tr:
+                continue
+
             # 각 tr에서 th와 td를 모두 가져옴
             th_selector_list = tr.css("th")
             td_selector_list = tr.css("td")
 
             selector_pair = zip(th_selector_list, td_selector_list)
-            # th와 td가 1개씩만 있는지 확인
             has_single_pair = len(th_selector_list) == 1
 
             for pair_idx, (th_selector, td_selector) in enumerate(selector_pair):
@@ -189,16 +221,20 @@ class VocaloidWikiSpider(scrapy.Spider):
                 # th와 td를 한 묶음으로 가져온 다음에 각각의 text를 가져옴
                 th_text = th_selector.css("*::text").get()
                 td_text_list = td_selector.css("*::text").getall()
-                td_text_list = "".join(td_text_list).strip().split("\n")
+                # 줄바꿈 문자나 다른 문자들로 td가 나뉘어져 있는 걸 분리함
+                # TODO: ×의 경우 히토시즈쿠 × 야마△의 경우를 위한 것으로 추후 수정가능능
+                td_text_list = re.split(r"\s*[\n×]\s*", "".join(td_text_list).strip())
+                # logging.debug(f"{th_text}: {td_text_list}")
 
                 # th가 여러 개의 정보를 가지고 있는지 확인
-                has_multiple_th = re.search(r"[&*\/]", th_text)
+                # 작사작곡처럼 붙어있는 경우 추가
+                # TODO: 만약 나중에 다른 경우가 생긴다면 추가해야 함
+                th_text_list = get_th_info(th_text)
+                has_multiple_th = len(th_text_list) > 1
                 if has_multiple_th:
-                    # 만약 그렇다면 th를 분리해서 list로 만듦
-                    th_text_list = re.split(r"[&*\/]", th_text)
-
-                    # th가 노래/조교, 코러스/조교일 경우 td에도 음합엔/조교자의 형태로 여러가지 정보가 있음
-                    # 이를 확인하기 위해 조교에 해당하는 phrase를 찾음
+                    # th가 노래/조교, 코러스/조교일 경우 td에도 음합엔 / 조교자의 형태로 여러가지 정보가 있음
+                    # 이를 확인하기 위한 과정
+                    # 조교에 해당하는 phrase를 찾음
                     phrase_vocaloid_editor = find_meta_from_name("vocaloidEditor")[
                         "phrase"
                     ]
@@ -275,7 +311,19 @@ class VocaloidWikiSpider(scrapy.Spider):
 
         # 업데이트 된 가사표로 새로 가사를 크롤링함
         for lyrics_table in fixed_lyrics_selector:
-            lyrics = lyrics_table.css("tr").css("th::text, td::text").getall()
+            lyrics_tr = lyrics_table.css("tr")
+            lyrics = []
+            # the-rain-clear-up-twice의 경우처럼 한 행에서 표가 2개로 나뉘어지는 경우가 있음
+            # 그런 경우를 위해서 임시로 for문을 돌면서 가사를 띄어쓰기와 함께 모아주는 코드 작성
+            # TODO: 추후에 가사를 모을 때 다른 경우가 생기면 그에 대한 수정 필요
+            for tr in lyrics_tr:
+                tr_text = tr.css("th::text, td::text").getall()
+                lyrics_text = ""
+                for text in tr_text:
+                    lyrics_text += text + " "
+                # 문서들의 일본어 가사에 전각 공백과 반각 공백이 혼재되어 있음
+                # 통일성을 위해서 일본어 전각 공백을 반각 공백으로 바꿈
+                lyrics.append(lyrics_text.strip().replace("\u3000", " "))
             # 이때 가사표가 2개 이상일 경우 동영상의 배치 순서 (왼>오)에 따라 가사도 배치되어 있다고 가정함
             # 동영상의 순서대로 가사를 배치함
             lyrics_info = LyricsInfo(lyrics=lyrics)
@@ -290,10 +338,10 @@ class VocaloidWikiSpider(scrapy.Spider):
         return lyrics_info_list
 
     def closed(self, reason):
-        # with open("json/allSongs.json", "w", encoding="utf-8") as f:
-        #     json.dump(self.all_songs, f, indent=2, ensure_ascii=False)
+        with open("json/allSongs.json", "w", encoding="utf-8") as f:
+            json.dump(self.all_songs, f, indent=2, ensure_ascii=False)
 
-        with open("json/errorSongs.json", "w", encoding="utf-8") as f:
+        with open("test/data/errorSongs.json", "w", encoding="utf-8") as f:
             json.dump(self.error_songs, f, indent=2, ensure_ascii=False)
 
 
