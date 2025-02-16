@@ -1,0 +1,46 @@
+[
+  {
+    "url": "http://vocaro.wikidot.com/t-a-o",
+    "error": "list index out of range"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/neppuu",
+    "error": "(sqlite3.IntegrityError) NOT NULL constraint failed: song.composer\n[SQL: INSERT INTO song (page_id, \"originalUrl\", composer, lyricist, singer, arranger, chorus, \"vocaloidEditor\", illustrator, \"videoProducer\", engineering, mixing, mastering, pianist, guitarist, bassist, drummer, trumpeter, trombonist, \"altoSaxophonist\", \"playerEtc\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: (353, 'https://www.youtube.com/watch?v=DmACzPgHYjQ', None, None, '하츠네 미쿠', None, None, None, None, None, '친구모집P', None, None, None, None, None, None, None, None, None, None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/the-flower-fall-twice",
+    "error": "list index out of range"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/eighty-eight",
+    "error": "list index out of range"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/gekkou",
+    "error": "(sqlite3.IntegrityError) NOT NULL constraint failed: song.lyricist\n[SQL: INSERT INTO song (page_id, \"originalUrl\", composer, lyricist, singer, arranger, chorus, \"vocaloidEditor\", illustrator, \"videoProducer\", engineering, mixing, mastering, pianist, guitarist, bassist, drummer, trumpeter, trombonist, \"altoSaxophonist\", \"playerEtc\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: (2719, 'http://www.nicovideo.jp/watch/sm40545552', '키타니 타츠야\\n하루마키고한', None, '하츠네 미쿠\\n카가미네 린', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/super-turkish-march-doomed",
+    "error": "(sqlite3.IntegrityError) NOT NULL constraint failed: song.composer\n[SQL: INSERT INTO song (page_id, \"originalUrl\", composer, lyricist, singer, arranger, chorus, \"vocaloidEditor\", illustrator, \"videoProducer\", engineering, mixing, mastering, pianist, guitarist, bassist, drummer, trumpeter, trombonist, \"altoSaxophonist\", \"playerEtc\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: (3346, 'http://www.nicovideo.jp/watch/sm4144858', None, '오와타P', '카무이 가쿠포', None, '하츠네 미쿠\\n카가미네 린', None, None, None, None, None, None, None, None, None, None, None, None, None, '볼프강 아마데우스 모차르트 \"터키 행진곡\"')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/suits",
+    "error": "list index out of range"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/momentary-drive",
+    "error": "(sqlite3.IntegrityError) NOT NULL constraint failed: song.composer\n[SQL: INSERT INTO song (page_id, \"originalUrl\", composer, lyricist, singer, arranger, chorus, \"vocaloidEditor\", illustrator, \"videoProducer\", engineering, mixing, mastering, pianist, guitarist, bassist, drummer, trumpeter, trombonist, \"altoSaxophonist\", \"playerEtc\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: (4649, '/taki-yoshimitsu', None, '오가타 카이키', 'IA', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/turkish-march-doomed",
+    "error": "(sqlite3.IntegrityError) NOT NULL constraint failed: song.composer\n[SQL: INSERT INTO song (page_id, \"originalUrl\", composer, lyricist, singer, arranger, chorus, \"vocaloidEditor\", illustrator, \"videoProducer\", engineering, mixing, mastering, pianist, guitarist, bassist, drummer, trumpeter, trombonist, \"altoSaxophonist\", \"playerEtc\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: (4680, 'http://www.nicovideo.jp/watch/sm2972481', None, 'garuna', '하츠네 미쿠', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, '볼프강 아마데우스 모차르트 \"터키 행진곡\"')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/the-rain-clear-up-twice",
+    "error": "list index out of range"
+  },
+  {
+    "url": "http://vocaro.wikidot.com/the-sky-burns-twice",
+    "error": "list index out of range"
+  }
+]
