@@ -1,5 +1,6 @@
 from scrapy.selector import Selector
 from typing import TypedDict
+from urllib.parse import urlparse
 import logging
 import json
 import sys
@@ -99,9 +100,22 @@ def parse_table(table_selector):
     # 이때 1번째 tr은 원 제목, 2번째 tr은 동영상 플레이어기에 3번째 tr부터 가져옴
     tr_list = table_selector.css("tr")
 
-    # 원본 URL 파싱
-    original_url_list = tr_list[2].css("a::attr(href)").getall()
-    # logging.debug(f"Original URL: {original_url_list}")
+    # 일반적인 경우 2번째 tr에 출처를 담은 링크가 있지만 없는 경우도 있음
+    # 이 경우에는 info_idx를 2로 설정함
+    info_idx = 3
+    third_tr_th_text = tr_list[2].css("th *::text").get()
+    if third_tr_th_text == "출처":
+        # 원본 URL 파싱
+        original_url_list = tr_list[2].css("a::attr(href)").getall()
+        # logging.debug(f"Original URL: {original_url_list}")
+    else:
+        info_idx = 2
+        # TODO: 현재는 니코동 플레이어에만 대응되게 해놨지만 나중에 다른 플레이어도 대응할 수 있도록 수정 필요
+        player_links = tr_list[1].css(".embed-video-wrap iframe::attr(src)").getall()
+        original_url_list = []
+        for player_link in player_links:
+            parsed_link = urlparse(player_link).path
+            original_url_list.append("https://www.nicovideo.jp" + parsed_link)
 
     for original_url in original_url_list:
         if original_url == "":
@@ -114,7 +128,7 @@ def parse_table(table_selector):
 
     # 만약 원본 url이 2개 이상이라면 그 밑의 tr에서 정보가 나누어질 때 맞는 위치에 넣어야 함
     # 이때 위치는 원본 url 배치 순서를 따름
-    for tr in tr_list[3:]:
+    for tr in tr_list[info_idx:]:
         # 일부 문서의 접을 수 있는 블럭에 해당하는 tr이 있는지 확인함
         # 해당 tr은 아무런 내용도 없으므로 스킵함
         is_collapsible_tr = tr.css(".collapsible-block").get()
@@ -226,7 +240,9 @@ def parse_lyrics(response, lyrics_selector):
             lyrics_text = ""
             for text in tr_text:
                 lyrics_text += text + " "
-            lyrics.append(lyrics_text.strip())
+            # 문서들의 일본어 가사에 전각 공백과 반각 공백이 혼재되어 있음
+            # 통일성을 위해서 일본어 전각 공백을 반각 공백으로 바꿈
+            lyrics.append(lyrics_text.strip().replace("\u3000", " "))
         # 이때 가사표가 2개 이상일 경우 동영상의 배치 순서 (왼>오)에 따라 가사도 배치되어 있다고 가정함
         # 동영상의 순서대로 가사를 배치함
         lyrics_info = LyricsInfo(lyrics=lyrics)
@@ -259,15 +275,15 @@ if __name__ == "__main__":
         # "eighty-eight.html",
         # "the-dream-that-girl-doll-dreamed.html",
         # "super-turkish-march-doomed.html",
-        # "momentary-drive.html",
+        "momentary-drive.html",
         # "turkish-march-doomed.html",
-        "the-rain-clear-up-twice.html",
+        # "the-rain-clear-up-twice.html",
     ]
 
     for data in html_data:
         title = data["title"]
-        if title not in title_to_check:
-            continue
+        # if title not in title_to_check:
+        #     continue
         logging.info(f"Start parsing {title}")
         response = Selector(text=data["content"])
         page_info = get_page_info(response, title)
