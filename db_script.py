@@ -1,4 +1,8 @@
-from database.create_db import create_db_and_tables, create_page, find_page
+from database.create_db import (
+    create_db_and_tables,
+    create_title,
+    create_page,
+)
 import os
 import shutil
 
@@ -21,6 +25,7 @@ def create_json_dir(delete_old_folder=False):
 
 create_json_dir(delete_old_folder=True)
 create_db_and_tables(delete_old_db=True)
+create_title()
 
 # for data in data_list:
 #     create_page(data)
