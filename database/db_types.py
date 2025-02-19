@@ -8,6 +8,8 @@ class Page(SQLModel, table=True):
     originalPageTitle: str | None = Field(default=None)
     originalTitle: str  # 원 제목
 
+    titleTypeId: int  # 제목 타입
+
     songs: list["Song"] = Relationship(back_populates="page")
     lyrics: list["Lyrics"] = Relationship(back_populates="page")
 
@@ -51,3 +53,8 @@ class Lyrics(SQLModel, table=True):
 
     lyrics: str  # 가사
     version: str | None = Field(default=None)
+
+
+class TitleType(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    titleType: str
