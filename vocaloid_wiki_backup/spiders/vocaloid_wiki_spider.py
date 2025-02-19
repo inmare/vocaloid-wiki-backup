@@ -9,7 +9,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.types import PageInfo, SongInfo, LyricsInfo, SONG_META_INFO
-from database import create_db
+from utils.parse_text import TextType, get_text_start_type, KOREAN_TABLE
+from database import create_db, find_data
 
 
 def get_th_info(th_text):
@@ -47,9 +48,9 @@ class VocaloidWikiSpider(scrapy.Spider):
 
     def start_requests(self):
         allsongs_url = "http://vocaro.wikidot.com/allsongs"
-
         yield scrapy.Request(allsongs_url, self.parse)
 
+        # Test code
         # urls = [
         #     "http://vocaro.wikidot.com/coaddiction",  # 일반적인 경우
         #     "http://vocaro.wikidot.com/raise",  # 원본 링크가 없는 경우
@@ -60,6 +61,13 @@ class VocaloidWikiSpider(scrapy.Spider):
         #     "http://vocaro.wikidot.com/telecaster-b-boy",  # 가사 표가 2개 이상인 경우
         #     "http://vocaro.wikidot.com/immature-discipline",  # 가사 표 2개 중 1개가 잘못된 경우
         #     "http://vocaro.wikidot.com/sing-a-song",  #  노래와 조교를 한 곳에 적어둔 경우
+        #     "http://vocaro.wikidot.com/t-a-o",  # 기타 참여자라는 숨겨진 표가 존재
+        #     "http://vocaro.wikidot.com/neppuu",  # 작사・작곡 형태
+        #     "http://vocaro.wikidot.com/the-dream-that-girl-doll-dreamed",  # 참가자 사이에 문자가 포함됨
+        #     "http://vocaro.wikidot.com/super-turkish-march-doomed",  # 원곡이 존재, 링크가 없음
+        #     "http://vocaro.wikidot.com/momentary-drive",  # 출처 행이 없음
+        #     "http://vocaro.wikidot.com/the-rain-clear-up-twice",  # 표에서 가사가 따로 나뉨
+        #     "http://vocaro.wikidot.com/gekkou",  # 그냥 에러가 남
         # ]
 
         # for url in urls:
@@ -100,6 +108,11 @@ class VocaloidWikiSpider(scrapy.Spider):
                 # 페이지 제목 파싱
                 page_title = response.css("#page-title::text").get().strip()
                 page_info["pageTitle"] = page_title
+
+                # 페이지 제목이 어떤 글자로 시작되는지 지정해서 해당하는 타입을 찾음
+                title_type = get_text_start_type(page_title)
+                text_type_id = find_data.find_text_type_id(title_type)
+                page_info["titleTypeId"] = text_type_id
 
                 # 중복된 제목으로 리다이렉트 되었을 때 제목/작곡가 형태의 제목을 파싱함
                 # 그 후 진짜 제목을 따로 저장
@@ -145,8 +158,8 @@ class VocaloidWikiSpider(scrapy.Spider):
                 create_db.create_page(page_info)
 
                 # json 파일로 저장
-                with open(f"json/data/{page_url[1:]}.json", "w", encoding="utf-8") as f:
-                    json.dump(page_info, f, indent=2, ensure_ascii=False)
+                # with open(f"json/data/{page_url[1:]}.json", "w", encoding="utf-8") as f:
+                #     json.dump(page_info, f, indent=2, ensure_ascii=False)
 
                 # 모든 곡에 대한 정보를 저장
                 # TODO: 추후에 제대로 된 타입 생성
@@ -338,10 +351,10 @@ class VocaloidWikiSpider(scrapy.Spider):
         return lyrics_info_list
 
     def closed(self, reason):
-        with open("json/allSongs.json", "w", encoding="utf-8") as f:
-            json.dump(self.all_songs, f, indent=2, ensure_ascii=False)
+        # with open("json/allSongs.json", "w", encoding="utf-8") as f:
+        #     json.dump(self.all_songs, f, indent=2, ensure_ascii=False)
 
-        with open("test/data/errorSongs.json", "w", encoding="utf-8") as f:
+        with open("test/test_data/errorSongs.json", "w", encoding="utf-8") as f:
             json.dump(self.error_songs, f, indent=2, ensure_ascii=False)
 
 
