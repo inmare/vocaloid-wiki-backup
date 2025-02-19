@@ -23,5 +23,7 @@ https://github.com/inmare/vocaloid-wiki-data
 - [x] 현재 찾아낸 여러 종류의 table 파싱하기
 - [ ] 가능한 table 정보 및 예시 문서를 모두 크롤링하는 테스트 코드 추가
 - [ ] 전체 분류페이지를 순환하면서 빠진 곡을 추가하기
-- [ ] sqlmodel, sqlite와 연동해서 빠르게 데이터 저장하고 검색하기
+- [x] sqlmodel, sqlite와 연동해서 빠르게 데이터 저장하고 검색하기
 - [ ] vocadb와 데이터 베이스 연동 및 플레이어 연동
+- [ ] elastic search와 데이터 베이스 연동하기
+- [ ] 표와 관련된 가사 문서를 위키 문법으로 변경하기
