@@ -2,6 +2,7 @@ import scrapy
 import json
 
 
+# TODO: 중복 링크 페이지에 대한 처리 추가하기
 class WholeLinkSpider(scrapy.Spider):
     name = "whole-links"
     whole_links = []
