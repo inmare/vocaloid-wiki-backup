@@ -1,5 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 
+# 데이터베이스의 클래스 이름은 json으로 주로 데이터 교환이 이루어진다는 것을 감안해서 camel case로 작성함
+
 
 class Page(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -18,7 +20,7 @@ class Page(SQLModel, table=True):
 class Song(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    page_id: int | None = Field(default=None, foreign_key="page.id")
+    pageId: int | None = Field(default=None, foreign_key="page.id")
     page: Page | None = Relationship(back_populates="songs")
 
     originalUrl: str | None = Field(default=None)  # 원곡 URL
@@ -48,13 +50,27 @@ class Song(SQLModel, table=True):
 class Lyrics(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
-    page_id: int | None = Field(default=None, foreign_key="page.id")
+    pageId: int | None = Field(default=None, foreign_key="page.id")
     page: Page | None = Relationship(back_populates="lyrics")
 
-    lyrics: str  # 가사
+    lyrics: str  # 가사, 추후에 위키 문법으로 고치기
+    # lyricsRaw: str | None = Field(default=None)  # 가사, 원본
     version: str | None = Field(default=None)
 
 
-class TitleType(SQLModel, table=True):
+class StartCharType(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    titleType: str
+    startChar: str  # latin, special, h1... 같은 타입
+    charName: str  # 라틴 문자, 특수 문자, ㄱ... 등등 해당 타입을 나타내는 이름
+
+
+# 가수 이름, 영어로 저장할지 한국어로 저장할지는 추후 결정
+class Singer(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    singerName: str  # 가수 이름
+
+
+# 작곡가 이름
+class Composer(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    composerName: str  # 작곡가 이름 여러 개일수도 있음
