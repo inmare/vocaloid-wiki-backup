@@ -1,11 +1,13 @@
 import scrapy
 import json
+from urllib.parse import urlparse
 
 
 # TODO: 중복 링크 페이지에 대한 처리 추가하기
 class WholeLinkSpider(scrapy.Spider):
     name = "whole-links"
     whole_links = []
+    error_links = []
 
     def start_requests(self):
         urls = [
@@ -34,7 +36,6 @@ class WholeLinkSpider(scrapy.Spider):
 
         for title_link in title_links:
             yield response.follow(title_link, self.parse_title_list)
-            # yield scrapy.Request(sub_link, self.parse_song)
 
     def parse_title_list(self, response):
         # ㄱ, ㄴ, ㄷ... 페이지에서 각 노래의 링크를 가져옴
@@ -43,10 +44,8 @@ class WholeLinkSpider(scrapy.Spider):
             "#page-content > p a:not(.newpage)::attr(href)"
         ).getall()
         for song_link in song_links:
-            if song_link not in self.whole_links:
-                # 링크가 없을 경우에만 곡 목록에 링크 추가
-                self.whole_links.append(song_link)
-                # yield scrapy.Request(song_link, self.parse_song)
+            yield response.follow(song_link, self.parse_song)
+            # yield scrapy.Request(song_link, self.parse_song)
 
     def parse_singer_list(self, response):
         # 각 음성 합성 엔진의 페이지를 먼저 얻음
@@ -79,8 +78,7 @@ class WholeLinkSpider(scrapy.Spider):
                 "#page-content .list-pages-box ul li a:not(.newpage)::attr(href)"
             ).getall()
             for song_link in song_links:
-                if song_link not in self.whole_links:
-                    self.whole_links.append(song_link)
+                yield response.follow(song_link, self.parse_song)
 
     def parse_artist_list(self, response):
         # 작곡가 페이지는 각 작곡가의 페이지로 이동하는 서브 페이지가 있음
@@ -101,9 +99,8 @@ class WholeLinkSpider(scrapy.Spider):
             "#page-content > ul li a:not(.newpage)::attr(href)"
         ).getall()
         for song_link in song_links:
-            if song_link not in self.whole_links:
-                self.whole_links.append(song_link)
-                # yield scrapy.Request(song_link, self.parse_song)
+            yield response.follow(song_link, self.parse_song)
+            # yield scrapy.Request(song_link, self.parse_song)
 
     def parse_series_list(self, response):
         # 시리즈 목록을 가져옴
@@ -120,9 +117,8 @@ class WholeLinkSpider(scrapy.Spider):
         ).getall()
 
         for song_link in song_links:
-            if song_link not in self.whole_links:
-                self.whole_links.append(song_link)
-                # yield scrapy.Request(song_link, self.parse_song)
+            yield response.follow(song_link, self.parse_song)
+            # yield scrapy.Request(song_link, self.parse_song)
 
     def parse_numbers(self, response, meta={"redirect": False}):
         # 인원수 목록을 가져옴
@@ -154,14 +150,36 @@ class WholeLinkSpider(scrapy.Spider):
                 ).getall()
 
             for song_link in song_links:
-                if song_link not in self.whole_links:
+                yield response.follow(song_link, self.parse_song)
+                # yield scrapy.Request(numbers_link, self.parse_song)
+
+    def parse_song(self, response):
+        info_table_list = response.css(".info-table")
+        if not info_table_list:
+            # 정보 테이블이 없는 경우에는 무시함
+            song_links = response.css(
+                "#page-content ul li a:not(.newpage)::attr(href)"
+            ).getall()
+            for song_link in song_links:
+                # 가끔씩 앨범과 곡이 제목이 동일해서 리다이렉트 링크에 포함된 경우가 있음
+                # 이 경우에는 링크에 :이 들어가는 걸 이용해서 제외함
+                if song_link not in self.whole_links and ":" not in song_link:
                     self.whole_links.append(song_link)
-                    # yield scrapy.Request(numbers_link, self.parse_song)
+                elif ":" in song_link:
+                    if response.url not in self.error_links:
+                        self.error_links.append(response.url)
+        else:
+            song_link = urlparse(response.url).path
+            if song_link not in self.whole_links:
+                self.whole_links.append(song_link)
 
     def closed(self, reason):
-        self.log(len(self.whole_links) + "개의 곡들을 발견했습니다.")
+        self.log(f"{len(self.whole_links)}개의 곡들을 발견했습니다.")
+        link_set = list(set(self.whole_links))
         with open("test/test_data/whole_links.json", "w", encoding="utf-8") as f:
-            json.dump(self.whole_links, f, indent=4)
+            json.dump(link_set, f, indent=4)
+        with open("test/test_data/error_whole_links.json", "w", encoding="utf-8") as f:
+            json.dump(self.error_links, f, indent=4)
 
 
 if __name__ == "__main__":
