@@ -3,32 +3,13 @@ from typing import TypedDict
 
 class SongInfo(TypedDict):
     originalUrl: str | None  # 원곡 URL
-    # 곡에 참여한 사람, 음합엔
-    composer: list[str] | None
-    lyricist: list[str]
-    singer: list[str]
-    originalSong: list[str] | None
-    arranger: list[str] | None
-    chorus: list[str] | None
-    vocaloidEditor: list[str] | None
-    illustrator: list[str] | None
-    videoProducer: list[str] | None
-    engineering: list[str] | None
-    mixing: list[str] | None
-    mastering: list[str] | None
-    pianist: list[str] | None
-    guitarist: list[str] | None
-    bassist: list[str] | None
-    drummer: list[str] | None
-    trumpeter: list[str] | None
-    trombonist: list[str] | None
-    altoSaxophonist: list[str] | None
-    playerEtc: list[str] | None
+    vocadbId: int | None  # vocadb id
 
 
 class LyricsInfo(TypedDict):
-    lyrics: list[str]  # 가사
-    version: str | None
+    lyrics: str  # 가사
+    lyricsHtml: str  # 가사, HTML
+    version: str | None  # 가사 버전
 
 
 class PageInfo(TypedDict):
@@ -47,7 +28,7 @@ class SongTerm(TypedDict):
 
 
 # 위키에서 서로 다른 용어들을 정리한 것
-term_dictionary = [
+TERM_DICT: list[SongTerm] = [
     SongTerm(
         name="작곡",
         mustSame=True,
@@ -81,7 +62,7 @@ term_dictionary = [
     SongTerm(
         name="조교",
         mustSame=False,
-        term=["조교", "음과 조교"],
+        term=["조교", "음과 조교", "코러스 제작"],
     ),
     SongTerm(
         name="일러스트",
@@ -114,7 +95,7 @@ term_dictionary = [
         term=["피아노", "키보드", "재즈피아노"],
     ),
     SongTerm(
-        name="신디사이저저",
+        name="신디사이저",
         mustSame=False,
         term=["신디사이저", "신스"],
     ),
@@ -167,12 +148,5 @@ term_dictionary = [
         name="스크래치",
         mustSame=False,
         term=["스크래치"],
-    ),
-    # 추후에 확인하고 수정하기
-    # http://vocaro.wikidot.com/dear-me
-    SongTerm(
-        name="코러스 제작",
-        mustSame=False,
-        term=["코러스 제작"],
     ),
 ]
