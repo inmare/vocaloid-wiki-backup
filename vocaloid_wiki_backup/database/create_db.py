@@ -63,7 +63,7 @@ def create_page(data: dict):
                     participants[key] = value
             # 참가자의 경우에는 json정보를 문자열로 변환해서 저장
             # TODO: 나중에 elastic search를 사용할 때 json으로 변환하기
-            song.participants = json.dumps(participants)
+            song.participants = json.dumps(participants, ensure_ascii=False)
             page.songs.append(song)
 
         for lyrics_info in data.get("lyricsInfo"):
