@@ -20,20 +20,24 @@ def get_th_info(th_text: str):
     return th_info
 
 
-def find_meta_from_name(nickname: str):
-    return list(filter(lambda term: term["nickname"] == nickname, TERM_DICT))[0]
+def find_meta_from_name(name: str):
+    return list(filter(lambda term: term["name"] == name, TERM_DICT))[0]
 
 
 def put_data_to_info(
     info_list, current_info, phrase_text, data, has_multiple_url, has_single_pair
 ):
+    # 현재 데이터는 key가 한글로 되어있는 형태임
+    # 이는 python이 유니코드를 처리할 수 있고, 이렇게 처리하는 편이 후에 데이터베이스나 프론트엔드에서 처리할 때 더 간편하기 때문임=
+    # 다만 현재 sqlite에서는 이를 단순히 문자열로 변환한 다음에 데이터베이스에 저장하는데
+    # 나증에 elastic search 사용시에 이를 json으로 변환해야 됨
     for meta in TERM_DICT:
         if phrase_text in meta["term"]:
             if meta["mustSame"] or (has_multiple_url and has_single_pair):
                 for info in info_list:
-                    info[meta["nickname"]] = data
+                    info[meta["name"]] = data
             else:
-                current_info[meta["nickname"]] = data
+                current_info[meta["name"]] = data
             break
 
 
