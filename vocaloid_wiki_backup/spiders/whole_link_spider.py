@@ -42,11 +42,12 @@ class WholeLinkSpider(LinkSpider):
     def closed(self, reason):
         self.log(f"{len(self.links)}개의 곡들을 발견했습니다.")
         self.log(f"{len(self.debug_links)}개의 누락된 곡들을 발견했습니다.")
-        with open(f"test/test_data/{self.name}.json", "w", encoding="utf-8") as f:
+        save_dir = "vocaloid_wiki_backup/test/test_data"
+        with open(f"{save_dir}/{self.name}.json", "w", encoding="utf-8") as f:
             json.dump(self.links, f, indent=2)
-        with open(f"test/test_data/error-{self.name}.json", "w", encoding="utf-8") as f:
+        with open(f"{save_dir}/error-{self.name}.json", "w", encoding="utf-8") as f:
             json.dump(self.error_links, f, indent=2)
-        with open(f"test/test_data/debug-{self.name}.json", "w", encoding="utf-8") as f:
+        with open(f"{save_dir}/debug-{self.name}.json", "w", encoding="utf-8") as f:
             json.dump(self.debug_links, f, indent=2)
 
 
