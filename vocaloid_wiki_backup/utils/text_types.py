@@ -17,9 +17,9 @@ class CharEnum(Enum):
     h12 = 12  # ㅌ
     h13 = 13  # ㅍ
     h14 = 14  # ㅎ
-    latin = auto()  # 영어
-    number = auto()  # 숫자
-    special = auto()  # 특수문자
+    latin = 15  # 라틴문자
+    number = 16  # 숫자
+    special = 17  # 특수문자
 
 
 class CharType(TypedDict):
