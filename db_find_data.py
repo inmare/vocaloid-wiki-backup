@@ -18,7 +18,7 @@ def find_page() -> Page:
 
         statement = (
             select(Page)
-            .where(Page.titleTypeId == h1_id)
+            .where(Page.startCharId == h1_id)
             .order_by(Page.pageTitle)
             # .limit(10)
         )

@@ -6,6 +6,7 @@ from sqlmodel import (
 )
 from ..utils.text_types import TEXT_TABLE
 from ..utils.db_types import Page, Song, Lyrics, StartCharType
+from ..utils.types import PageInfo
 from ..utils.parse_text import get_text_start_type
 import os
 import json
@@ -41,7 +42,7 @@ def create_title():
             session.commit()
 
 
-def create_page(data: dict):
+def create_page(data: PageInfo):
     with Session(engine) as session:
         page = Page()
         for key, value in data.items():
@@ -49,9 +50,9 @@ def create_page(data: dict):
                 continue
             setattr(page, key, value)
 
-        original_title = data.get("originalTitle")
+        original_title = data.get("pageTitle")
         title_type = get_text_start_type(original_title)
-        page.titleTypeId = title_type.value
+        page.startCharId = title_type.value
 
         for song_info in data.get("songInfo"):
             song = Song()
