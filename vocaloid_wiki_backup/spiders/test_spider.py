@@ -38,6 +38,7 @@ class TestParserSpider(LinkSpider):
             yield scrapy.Request(url, partial(parse_song_page, self))
 
     def closed(self, reason):
-        with open("test.json", mode="w", encoding="utf-8") as fp:
-            json.dump(self.info_list, fp, ensure_ascii=False, indent=2)
+        pass
+        # with open("test.json", mode="w", encoding="utf-8") as fp:
+        #     json.dump(self.info_list, fp, ensure_ascii=False, indent=2)
         # self.log(self.info_list[0])
