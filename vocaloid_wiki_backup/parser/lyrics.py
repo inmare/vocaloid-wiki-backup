@@ -55,7 +55,7 @@ def parse_lyrics(response):
     if footnotes_html:
         footnotes_raw_html = remove_html_attrib(footnotes_html)
         for lyrics_info in lyrics_info_list:
-            lyrics_info["lyricsHtml"] += footnotes_raw_html
+            lyrics_info["footerHtml"] = footnotes_raw_html
 
     table_wrap = response.css(".table-wrap")
     if table_wrap:
