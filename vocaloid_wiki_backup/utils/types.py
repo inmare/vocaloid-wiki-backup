@@ -9,6 +9,7 @@ class SongInfo(TypedDict):
 class LyricsInfo(TypedDict):
     lyrics: str  # 가사
     lyricsHtml: str  # 가사, HTML
+    footerHtml: str | None
     version: str | None  # 가사 버전
 
 
